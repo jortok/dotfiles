@@ -127,7 +127,7 @@
 [commit]
 
 	# https://help.github.com/articles/signing-commits-using-gpg/
-	gpgsign = true
+	gpgsign = false
 
 [diff]
 
@@ -181,3 +181,8 @@
 [init]
 
 	defaultBranch = main
+[gpg]
+	program = gpg
+[user]
+	name = Jorge Tokunaga
+	email = tokunag@gmail.com
