@@ -1,0 +1,3 @@
+# vim: filetype=neomuttrc
+source /usr/local/share/mutt-wizard/mutt-wizard.muttrc
+set header_cache_backend = "lmdb"

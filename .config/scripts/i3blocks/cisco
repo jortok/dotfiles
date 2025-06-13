@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+rutaCisco=/proc/sys/net/ipv4/conf/cscotun0/tag
+contra=$(pass jorge.tokunaga@mejoredu.gob.mx)
+
+estado() {
+  ip=$(ifconfig cscotun0 | grep 'inet '| awk {'print $2'})
+  if [ -f "$rutaCisco" ]; then
+    echo MEJOREDU $ip
+  else
+    echo -e "<span color='red'>MEJOREDU</span>\n"
+  fi
+}
+
+cambio() {
+  if [ -e $rutaCisco ]; then
+    CiscoOff > /dev/null
+    wait
+    notify-send -i $HOME/.local/share/icons/mejoredu.png "VPN MEJOREDU" "Conexión terminada."
+    $(estado)
+  else
+    CiscoOn > /dev/null
+    wait
+    notify-send -i $HOME/.local/share/icons/mejoredu.png "VPN MEJOREDU" "Conexión estabecida."
+    $(estado)
+  fi
+}
+
+case $BLOCK_BUTTON in
+  1) cambio ;;
+  3) cambio ;;
+esac
+
+estado

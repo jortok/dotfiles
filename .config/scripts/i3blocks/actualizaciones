@@ -1,0 +1,3 @@
+#!/bin/bash
+faltantes=$(sudo apt update | grep "upgraded"| awk '{ print $1 }')
+echo $faltantes
