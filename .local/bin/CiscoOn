@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+/opt/cisco/anyconnect/bin/vpn -s << EOF
+connect vpn.mejoredu.gob.mx:8443
+jorge.tokunaga
+Tr3\$xochIO=24Tr3\$xochIO=25
+y
+EOF

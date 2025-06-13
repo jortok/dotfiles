@@ -1,0 +1,12 @@
+#!/bin/sh
+
+folder=${1:-$(pwd)}
+
+mkdir $folder/.tmp
+for file in "${folder}"/*;do
+    hash=$(md5sum "${file}"|cut -d' ' -f1)
+    ext=${file##*.}
+    mv -v "$file" "${folder}/.tmp/${hash}.${ext}"
+done
+mv -v $folder/.tmp/* $folder/
+rm -rf $folder/.tmp

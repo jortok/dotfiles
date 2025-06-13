@@ -1,0 +1,7 @@
+{
+	"auths": {
+		"diagnosticas.azurecr.io": {
+			"auth": "ZGlhZ25vc3RpY2FzOkI1citSdGtJT2dzK1JQQlZHMmdKYUlmczBFZ1RlemVX"
+		}
+	}
+}

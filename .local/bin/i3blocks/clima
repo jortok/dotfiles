@@ -1,0 +1,14 @@
+#!/bin/bash
+#curl -s "wttr.in/?format=+%c%t\n" > ~/.cache/clima.txt
+
+letrero() {
+  curl -s "https://wttr.in/?format=+%c%t\n"
+}
+#echo "💧 $(curl -s "wttr.in/?format=%h+%p\n")"
+
+case $BLOCK_BUTTON in
+  1) echo "$(curl -s 'https://wttr.in/?format=%c+%t\n')" ;;
+  3) echo "💧 $(curl -s 'https://wttr.in/?format=%h+%p\n')" ;;
+esac
+
+letrero
