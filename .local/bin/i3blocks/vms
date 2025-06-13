@@ -1,0 +1,16 @@
+#!/bin/bash
+
+vgrt=$(/usr/bin/vagrant global-status | egrep -c '^[0-9a-z]{7}\s+\w+\s+libvirt\srunning')
+vbox=$(/usr/bin/vboxmanage list runningvms | wc -l)
+lxc=$(/snap/bin/lxc ls |grep -c 'RUNNING')
+docker=$(/usr/bin/docker ps |grep -c 'Up ')
+
+unset cadena
+
+if [ $vgrt -ne 0 ]; then cadena+="VGRT:$vgrt "; fi
+if [ $vbox -ne 0 ]; then cadena+="VBOX:$vbox "; fi
+if [ $lxc -ne 0 ]; then cadena+="LXC:$lxc "; fi
+if [ $docker -ne 0 ]; then cadena+=":$docker"; fi
+
+echo $cadena
+echo $cadena > $HOME/.cache/vms.txt

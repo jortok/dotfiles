@@ -1,0 +1,36 @@
+#!/bin/sh
+# Prints the current volume or 🔇 if muted. (Version con amixer/ALSA)
+
+case $BLOCK_BUTTON in
+    # Clic de en medio para silenciar
+    2) amixer set Master toggle > /dev/null && pkill -RTMIN+10 dwmblocks ;;
+    # Scroll para cambiar volumen
+    4) amixer set Master 1%+ > /dev/null && pkill -RTMIN+10 dwmblocks ;;
+    5) amixer set Master 1%- > /dev/null && pkill -RTMIN+10 dwmblocks ;;
+    *) ;;
+esac
+
+# Obtener el estado de amixer
+output=$(amixer get Master | tail -n1)
+
+# Revisar si está silenciado
+if echo "$output" | grep -q "\[off\]"; then
+    echo 🔇
+    exit
+fi
+
+# Extraer el porcentaje de volumen
+vol=$(echo "$output" | awk -F'[][]' '{print $2}' | tr -d '%')
+
+# La misma lógica para los iconos
+if [ "$vol" -ge 70 ]; then
+    icon="🔊"
+elif [ "$vol" -ge 30 ]; then
+    icon="🔉"
+elif [ "$vol" -ge 1 ]; then
+    icon="🔈"
+else
+    icon="🔇"
+fi
+
+echo "$icon$vol%"

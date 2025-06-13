@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+# Pantalla izquierda
+xrandr --output DisplayPort-1 --rotate left
+
+# Pantalla derecha
+xrandr --output DisplayPort-0 --rotate left
+
+# Orden de las pantallas
+xrandr --output DisplayPort-0 --auto --right-of DisplayPort-1

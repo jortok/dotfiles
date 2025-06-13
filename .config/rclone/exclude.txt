@@ -1,0 +1,68 @@
+# Directorios de entornos virtuales de Python
+.venv/**
+venv/**
+
+# Repositorios y archivos relacionados con Git
+.git/**
+.gitignore
+
+# Archivos de respaldo comunes
+*.bkp
+*.bak
+*~          # Archivos de respaldo de editores (ej. Emacs, Vim)
+*.swp       # Archivos swap de Vim
+*.tmp       # Archivos temporales genéricos
+
+# Archivos y carpetas de sistema operativo/escritorio
+.DS_Store   # macOS
+Thumbs.db   # Windows
+desktop.ini # Windows
+.Trash/** # Carpetas de papelera comunes
+.debris/** # Como lo tenías
+
+# Carpetas de caché comunes
+.cache/** # Caché de aplicaciones en Linux
+Cache/** # A veces usado por aplicaciones
+cache/**
+
+# Logs
+*.log
+
+# Archivos de configuración específicos que podrías no querer sincronizar
+# .rclone.conf # Generalmente no está dentro de Documentos/Pictures, pero por si acaso
+# .msmtprc     # Ejemplo de otro archivo de config sensible
+
+# Sincronizadores (archivos de estado/control)
+# Asegúrate de que estos patrones coincidan con los archivos/carpetas que generan
+# tus otras herramientas de sincronización DENTRO de ~/Documents o ~/Pictures
+# .sync/** # Ejemplo genérico para carpetas de estado de sync
+# *.db                    # Podría ser demasiado amplio, pero a veces se usa para bases de estado
+# .stfolder             # Syncthing
+# .stversions           # Syncthing
+# Para isync/mbsync, usualmente los archivos de estado (.mbsyncstate, .uidvalidity)
+# están en el directorio raíz de Maildir, que probablemente no esté DENTRO de Documentos/Pictures.
+# Si sí lo están, añade patrones como:
+# .mbsyncstate
+# .uidvalidity.*
+
+# Python bytecode y caché
+__pycache__/**
+*.pyc
+
+# Node.js
+node_modules/**
+
+# Ollama
+.ollama/**
+models/**
+
+# Fooocus
+Fooocus/models/**
+Fooocus/outputs/**
+Fooocus/fooocus_env/**
+
+nomina-tool/data/**
+
+
+# Archivos de MegaSync (si sus carpetas de control están dentro de lo que sincronizas)
+# .megasync/** # Revisa el nombre exacto que usa MegaSync para sus archivos/carpetas de control

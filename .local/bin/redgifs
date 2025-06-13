@@ -1,0 +1,82 @@
+#!/bin/bash
+
+# Script para encontrar, descargar y reproducir un video (.mp4 o .gif) desde una URL.
+# Esta versión usa aria2c para descargas paralelas y más rápidas.
+# También remueve "-silent" de la URL si lo encuentra.
+# Herramientas necesarias: curl, aria2c, mpv
+
+# --- 1. Verificación de Herramientas y Argumentos ---
+# Se asegura de que aria2c esté instalado.
+if ! command -v aria2c &> /dev/null
+then
+    echo "¡Error! La herramienta 'aria2c' no está instalada."
+    echo "Por favor, instálala para usar este script (ej: sudo apt install aria2)."
+    exit 1
+fi
+
+# Se asegura de que el usuario haya proporcionado una URL como argumento.
+if [ -z "$1" ]; then
+  echo "¡Error! Debes proporcionar una URL como argumento."
+  echo "Uso: $0 <URL_DEL_SITIO_WEB>"
+  exit 1
+fi
+
+URL_SITIO="$1"
+echo "🔎 Buscando un enlace de video en: $URL_SITIO"
+
+# --- 2. Extracción de la URL del Video ---
+# Usa curl para obtener el contenido HTML de la página.
+# Usa grep con una expresión regular para encontrar la primera URL que termine en .mp4 o .gif.
+VIDEO_URL=""
+VIDEO_URL=$(curl -sL "$URL_SITIO" | grep -Eo '(http|https)://[^"]+\.(mp4|gif)' | head -n 1)
+set +x
+echo "URL: $VIDEO_URL"
+
+# Verifica si se encontró una URL.
+if [ -z "$VIDEO_URL" ]; then
+  echo "❌ No se encontró ninguna URL de video (.mp4 o .gif o .m4s) en la página."
+  exit 1
+fi
+
+echo "✅ Video encontrado: $VIDEO_URL"
+
+# --- 3. Modificación de la URL (si es necesario) ---
+# Si la URL contiene "-silent", lo quitamos para intentar obtener la versión con sonido.
+# Se usa la sustitución de patrones de Bash: ${string//substring/replacement}
+if [[ "$VIDEO_URL" == *"-silent"* ]]; then
+  echo "🔇 Detectado '-silent' en la URL. Modificando para obtener video con sonido."
+  VIDEO_URL="${VIDEO_URL//-silent/}"
+  echo "✅ Nueva URL (sin '-silent'): $VIDEO_URL"
+fi
+
+# --- 4. Descarga del Video con aria2c ---
+# Extrae el nombre del archivo de la URL para guardarlo en /tmp.
+NOMBRE_ARCHIVO=$(basename "$VIDEO_URL")
+RUTA_TEMPORAL="/tmp/$NOMBRE_ARCHIVO"
+
+echo "🔽 Descargando video con 4 conexiones paralelas en: $RUTA_TEMPORAL"
+# Usa aria2c para una descarga más rápida con múltiples conexiones.
+# -q: modo silencioso.
+# -x4: usa hasta 4 conexiones paralelas por servidor.
+# -d: directorio de destino.
+# -o: nombre del archivo de salida.
+aria2c -q -x4 -d "/tmp" -o "$NOMBRE_ARCHIVO" "$VIDEO_URL"
+
+# Verifica si la descarga fue exitosa.
+if [ $? -ne 0 ]; then
+    echo "❌ Error al descargar el archivo con aria2c."
+    exit 1
+fi
+
+echo "📥 Descarga completada."
+
+# --- 5. Reproducción del Video ---
+echo "▶️  Reproduciendo video con mpv..."
+mpv "$RUTA_TEMPORAL"
+
+# --- 6. Limpieza (Opcional) ---
+# Una vez cerrado mpv, el script continuará y borrará el archivo temporal.
+echo "🗑️  Limpiando archivo temporal..."
+rm "$RUTA_TEMPORAL"
+
+echo "✨ ¡Listo!"

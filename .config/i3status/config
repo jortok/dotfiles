@@ -1,0 +1,131 @@
+# i3status configuration file.
+# see "man i3status" for documentation.
+
+# It is important that this file is edited as UTF-8.
+# The following line should contain a sharp s:
+# ß
+# If the above line is not correctly displayed, fix your editor first!
+
+general {
+        colors = true
+        interval = 1
+        color_good = "#989898"
+        color_degraded = "#8c7f22"
+        color_bad = "#be2422"
+}
+
+#order += "ipv6"
+order+= "volume master"
+order += "read_file clima"
+order += "wireless _first_"
+order += "ethernet _first_"
+order += "battery all"
+order += "disk /"
+order += "disk /home"
+order += "cpu_temperature 0"
+order += "cpu_usage"
+order += "memory"
+order+= "run_watch proxy"
+order+= "run_watch DHCP"
+order+= "run_watch VPN"
+order+= "run_watch anyconnect"
+order += "tztime local"
+
+volume master {
+        device = "default"
+        mixer = "Master"
+        mixer_idx = 0
+        format = "🔊 %volume"
+        format_muted = "🔇 "
+}
+
+wireless _first_ {
+        format_up = "%quality (%ip)"
+        #format_up = "%ip (%quality)"
+        format_down = ""
+}
+
+ethernet _first_ {
+        format_up = " %ip (%speed)"
+        format_down = ""
+}
+
+battery all {
+        format = "%status%percentage %remaining"
+        format_down = ""
+        low_threshold = 20
+        threshold_type = percentage
+        integer_battery_capacity = true
+        last_full_capacity = true
+        hide_seconds = true
+        status_chr = " "
+        status_bat = " "
+        status_unk = " "
+        status_full = " "
+}
+
+disk "/" {
+        format = " /:%percentage_used"
+        prefix_type = custom
+        low_threshold = 20
+        threshold_type = percentage_avail
+}
+
+disk "/home" {
+        format = " /home:%percentage_used"
+        prefix_type = custom
+        low_threshold = 20
+        threshold_type = percentage_avail
+}
+
+cpu_temperature 0 {
+        format = " %degrees°C"
+}
+
+cpu_usage {
+        format = " %usage"
+}
+
+memory {
+        format = " %used/%total"
+        threshold_degraded = "10%"
+        format_degraded = "%free"
+}
+
+tztime local {
+        format = " %Y-%m-%d w%W %H:%M"
+}
+
+run_watch proxy {
+        pidfile = "/tmp/proxy.pid"
+        format="Proxy:⬤"
+        format_down=""
+        color_good = "#4E9A06"
+}
+
+run_watch VPN {
+        pidfile = "/sys/class/net/tun0/dev_id"
+        format="VPN:⬤"
+        format_down=""
+        color_good = "#4E9A06"
+}
+
+run_watch anyconnect {
+        #pidfile = "/var/run/vpnagentd.pid"
+        pidfile = "/proc/sys/net/ipv4/conf/cscotun0/tag"
+        format="CISCO:⬤"
+        format_down=""
+        color_good = "#4E9A06"
+}
+
+run_watch DHCP {
+        pidfile = "/var/run/dhclient*.pid"
+        format="DHCP:⬤"
+        format_down=""
+        color_good = "#4E9A06"
+}
+
+read_file clima {
+  format = "%content"
+  path = "/home/toku/.cache/clima.txt"
+}

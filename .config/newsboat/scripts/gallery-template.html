@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galería Web - Gallery Tool</title>
+    <style>
+        :root {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --accent: #4a9eff;
+            --border: #404040;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 1rem;
+        }
+        .header {
+            background: var(--bg-secondary);
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        .header h1 {
+            font-size: 1.5rem;
+            margin: 0 0 0.5rem 0;
+        }
+        .header a {
+            color: var(--accent);
+            text-decoration: none;
+            word-break: break-all;
+        }
+        .header a:hover {
+            text-decoration: underline;
+        }
+        .header-actions {
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .button-zip {
+            background-color: var(--accent);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            /* MEJORA: Sombra de texto para mejorar la legibilidad */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        .button-zip:hover {
+            background-color: #3a8efd;
+        }
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+        .media-item {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .media-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .media-item img, .media-item video {
+            width: 100%;
+            height: 250px;
+            display: block;
+            object-fit: cover;
+            background-color: #111;
+        }
+        .media-info {
+            padding: 0.75rem 1rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            word-break: break-all;
+        }
+        .item-count {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🖼️ Galería Web</h1>
+        <div>Fuente: <a href="SOURCE_URL_PLACEHOLDER" target="_blank">SOURCE_URL_PLACEHOLDER</a></div>
+        <div class="header-actions">
+            <!-- ZIP_BUTTON_PLACEHOLDER -->
+            <span class="item-count">(Mostrando PLACEHOLDER_ITEM_COUNT elementos)</span>
+        </div>
+    </div>
+    
+    <div class="gallery" id="gallery-container">
+        <!-- Los elementos se insertarán aquí dinámicamente -->
+    </div>
+    
+    <script>
+        // El script de BASH reemplazará 'MEDIA_FILES_PLACEHOLDER' con el array de objetos JavaScript.
+        const mediaData = MEDIA_FILES_PLACEHOLDER;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const gallery = document.getElementById('gallery-container');
+        
+            if (typeof mediaData !== 'object' || mediaData.length === 0) {
+                gallery.innerHTML = "<p>No se encontraron imágenes o videos para mostrar.</p>";
+                return;
+            }
+
+            // El array ya viene ordenado desde Bash, solo se renderiza.
+            mediaData.forEach(file => {
+                const item = document.createElement('div');
+                item.className = 'media-item';
+                
+                const isVideo = /\.(mp4|webm|mov|ogv|avi|mkv|m4v)$/i.test(file.name);
+                const mediaElement = isVideo ? 
+                    `<video preload="metadata" controls><source src="./${file.name}" type="video/${file.extension || 'mp4'}"></video>` :
+                    `<a href="./${file.name}" target="_blank"><img src="./${file.name}" alt="${file.name}" loading="lazy"></a>`;
+                
+                item.innerHTML = `
+                    ${mediaElement}
+                    <div class="media-info"><b>${file.name}</b><br>(${file.size})</div>
+                `;
+                gallery.appendChild(item);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+# i3blocks config file
+#
+# Please see man i3blocks for a complete reference!
+# The man page is also hosted at http://vivien.github.io/i3blocks
+
+# Global properties
+#
+# The top properties below are applied to every block, but can be overridden.
+# Each block command defaults to the script name to avoid boilerplate.
+command=/usr/share/i3blocks/$BLOCK_NAME
+separator_block_width=15
+markup=none
+
+# Volume indicator
+#
+# The first parameter sets the step (and units to display)
+# The second parameter overrides the mixer selection
+# See the script for details.
+[volume]
+label=♪
+instance=Master
+interval=once
+signal=10
+
+[disk]
+label=/home
+instance=/home
+interval=30
+
+# Network interface monitoring
+#
+# If the instance is not specified, use the interface used for default route.
+# The address can be forced to IPv4 or IPv6 with -4 or -6 switches.
+[iface]
+#instance=wlan0
+color=#00FF00
+interval=10
+separator=true
+
+[wifi]
+#instance=enp0s31f6
+interval=10
+
+[BW]
+#instance=eth0
+command=$HOME/.config/scripts/i3blocks/bandwidth
+#$HOME/.config/scripts/i3blocks
+interval=5
+
+# CPU usage
+#
+# The script may be called with -w and -c switches to specify thresholds,
+# see the script for details.
+[cpu_usage]
+#label=CPU
+label=🖥️
+interval=10
+#min_width=CPU: 100.00%
+separator=true
+
+[load_average]
+label=🏋️
+command=$HOME/.config/scripts/i3blocks/load
+interval=60
+separator=true
+
+[memory]
+label=🐏
+#label=
+separator=true
+interval=10
+
+[batteria]
+command=$HOME/.config/scripts/i3blocks/battery
+interval=30
+markup=pango
+
+#[temperature]
+#label=🌡
+#interval=10
+
+#[docker]
+#command=$HOME/.config/scripts/i3blocks/docker
+#interval=10
+#label=🐳
+
+
+[vms]
+command=cat ~/.cache/vms.txt
+interval=60
+markup=pango
+
+[clima]
+command=$HOME/.config/scripts/i3blocks/clima
+interval=once
+
+[mediaplayer]
+label=
+instance=spotify
+command=$HOME/.config/scripts/i3blocks/mediaplayer | tr -d '\n'
+interval=5
+signal=10
+
+#[mediaplayer]
+#command=$HOME/.config/scripts/i3blocks/mediaplayer | $HOME/.config/scripts/i3blocks/zscroll -l 20
+#label=
+#markup=pango
+#interval=preserve
+
+[UBUNTU]
+label=
+command=$HOME/.config/scripts/i3blocks/actualizaciones
+interval=once
+markup=pango
+
+[time]
+command=date '+%Y-%m-%d w%V.%u %H:%M'
+interval=5
+signal=11
