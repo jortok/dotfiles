@@ -1,1 +1,1 @@
-.config/shell/profile
+/home/toku/.config/zsh/.zprofile
