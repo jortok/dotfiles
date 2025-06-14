@@ -1,60 +1,247 @@
-#!/bin/sh
+# =============================================================================
+#  Archivo de Alias y Funciones para Zsh
+# =============================================================================
+#
+# ---
+# ## 1. Configuración de Comandos Base
+# ---
+# Establece el comportamiento por defecto de comandos esenciales.
 
-# Use neovim for vim if present.
-[ -x "$(command -v nvim)" ] && alias vim="nvim" vimdiff="nvim -d"
+# Usar Neovim (nvim) si está disponible.
+if command -v nvim >/dev/null 2>&1; then
+  alias vi='nvim'
+  alias vim='nvim'
+  alias vimdiff='nvim -d'
+fi
 
-# Use $XINITRC variable if file exists.
-[ -f "$XINITRC" ] && alias startx='startx $XINITRC'
+# Parámetros para comandos de manipulación de archivos.
+# -i: Interactivo (pregunta antes de sobreescribir).
+# -v: Verbose (muestra lo que está haciendo).
+# -I: Pregunta una vez antes de borrar más de tres archivos.
+# -p: Crea directorios padres si no existen.
+alias cp='cp -iv'
+alias mv='mv -iv'
+alias rm='rm -vI'
+alias mkd='mkdir -pv'
+alias rsync='rsync -azh --info=progress2 --no-inc-recursive' # -azh es más común que -vrPlu
+alias bc='bc -ql'
+alias ffmpeg='ffmpeg -hide_banner'
 
-[ -f "$MBSYNCRC" ] && alias mbsync='mbsync -c $MBSYNCRC'
+# ---
+# ## 2. Comandos con Color y Formato Mejorado
+# ---
+# Mejora la legibilidad de la salida de varios comandos.
 
-# sudo not required for some system commands
-for command in mount umount sv pacman updatedb su shutdown poweroff reboot ; do
-	alias $command="sudo $command"
-done; unset command
+# Habilita el color para `ls`, `grep` y `diff`.
+# La opción --color=auto es estándar en la mayoría de sistemas modernos.
+alias ls='ls -hN --color=auto --group-directories-first'
+alias grep='grep --color=auto'
+alias diff='diff --color=auto'
+alias ip='ip --color=auto'
 
+# Resaltado de sintaxis con `highlight` (si está instalado).
+if command -v highlight >/dev/null 2>&1; then
+  alias ccat='highlight --out-format=ansi'
+fi
+
+# Listado de archivos mejorado.
+# -l: Formato largo.
+# -A: Muestra archivos ocultos (casi todos, excepto . y ..).
+# -F: Añade un indicador de tipo de archivo (e.g., / para directorios).
+# -r: Orden inverso (con -t, muestra los más recientes al final).
+# -t: Ordena por fecha de modificación.
+alias l='ls -lF'
+alias la='ls -lAF'
+alias ll='ls -lrthA' # Lista los archivos modificados más recientemente al final.
+alias lsd='ls -lF | grep --color=never "^d"' # Lista solo directorios.
+alias lsf='ls -lF | grep --color=never "^-"'  # Lista solo archivos.
+
+# ---
+# ## 3. Gestión del Sistema y Privilegios
+# ---
+
+# Ejecutar comandos comunes de sistema con `sudo` automáticamente.
+# ¡CUIDADO! Esto es conveniente, pero puede ser peligroso.
+# Asegúrate de que es el comportamiento que realmente deseas.
+for cmd in mount umount sv pacman updatedb shutdown poweroff reboot; do
+  alias $cmd="sudo $cmd"
+done; unset cmd
+
+# Atajos para gestores de paquetes (Arch y Void).
+alias p='sudo pacman'
+alias xi='sudo xbps-install'
+alias xr='sudo xbps-remove -R'
+alias xq='xbps-query'
+
+# ---
+# ## 4. Atajos y Abreviaciones Comunes
+# ---
+# Abreviaciones para comandos largos o de uso frecuente.
+
+alias ka='killall'
+alias g='git'
+alias sdn='shutdown -h now'
+alias z='zathura'
+alias e='$EDITOR' # Abre el editor por defecto.
+alias v='$EDITOR' # Alias alternativo para el editor.
+
+# Recargar la configuración del shell.
+# Convertido a función para mayor claridad.
+ref() {
+  echo "♻️ Recargando configuración del shell..."
+  # Aquí puedes añadir los scripts que generen tus archivos de shortcuts si es necesario.
+  # shortcuts >/dev/null
+  source "${XDG_CONFIG_HOME:-$HOME/.config}/shell/shortcutrc"
+  source "${XDG_CONFIG_HOME:-$HOME/.config}/shell/shortcutenvrc"
+  source "${XDG_CONFIG_HOME:-$HOME/.config}/shell/zshnameddirrc"
+  echo "✅ ¡Listo!"
+}
+
+
+# ---
+# ## 5. Funciones de Utilidad
+# ---
+# Funciones personalizadas para tareas específicas.
+
+# Crear un directorio y entrar en él.
+mkcd() {
+  mkdir -p "$1" && cd "$1"
+}
+
+# Editar un script personal de forma rápida.
+# Usa fzf para seleccionar un script de tu directorio bin y lo abre con $EDITOR.
 se() {
-	choice="$(find ~/.local/bin -mindepth 1 -printf '%P\n' | fzf)"
-	[ -f "$HOME/.local/bin/$choice" ] && $EDITOR "$HOME/.local/bin/$choice"
-	}
+  local choice
+  choice=$(find "${HOME}/.local/bin" -type f -printf '%P\n' | fzf --height=40% --border)
+  if [[ -n "$choice" ]]; then
+    "$EDITOR" "${HOME}/.local/bin/${choice}"
+  fi
+}
 
-# Verbosity and settings that you pretty much just always are going to want.
-alias \
-	cp="cp -iv" \
-	mv="mv -iv" \
-	rm="rm -vI" \
-	bc="bc -ql" \
-	rsync="rsync -vrPlu" \
-	mkd="mkdir -pv" \
-	yt="yt-dlp --embed-metadata -i" \
-	yta="yt -x -f bestaudio/best" \
-	ytt="yt --skip-download --write-thumbnail" \
-	ffmpeg="ffmpeg -hide_banner"
+# Mostrar el PATH, una entrada por línea.
+path() {
+  echo -e "${PATH//:/\\n}"
+}
 
-# Colorize commands when possible.
-alias \
-	ls="ls -hN --color=auto --group-directories-first" \
-	grep="grep --color=auto" \
-	diff="diff --color=auto" \
-	ccat="highlight --out-format=ansi" \
-	ip="ip -color=auto"
+# Mostrar puertos en uso.
+ports() {
+  ss -tulanp
+}
 
-# These common commands are just too long! Abbreviate them.
-alias \
-	ka="killall" \
-	g="git" \
-	trem="transmission-remote" \
-	YT="youtube-viewer" \
-	sdn="shutdown -h now" \
-	e='$EDITOR' \
-	v='$EDITOR' \
-	p="pacman" \
-	xi="sudo xbps-install" \
-	xr="sudo xbps-remove -R" \
-	xq="xbps-query" \
-	z="zathura"
+# Mostrar puntos de montaje de forma legible.
+mnt() {
+  mount | awk '/^\/dev/ || /^\/\// {print $1, "on", $3, "type", $5}' | column -t | sort
+}
 
-alias \
-	lf="lfub" \
-	magit="nvim -c MagitOnly" \
-	ref='shortcuts >/dev/null; source ${XDG_CONFIG_HOME:-$HOME/.config}/shell/shortcutrc ; source ${XDG_CONFIG_HOME:-$HOME/.config}/shell/shortcutenvrc ; source ${XDG_CONFIG_HOME:-$HOME/.config}/shell/zshnameddirrc'
+# Información de fecha y hora.
+alias week='date +%V'
+alias tokudate='date +"%Y-%m-%d w%V.%u %H:%M"'
+
+# ---
+# ## 6. Docker
+# ---
+# Funciones y alias para facilitar el manejo de Docker y Docker Compose.
+
+# Limpiar el sistema Docker (contenedores, imágenes y volúmenes no usados).
+dclean() {
+  echo "🧹 Limpiando Docker..."
+  docker container prune -f
+  docker image prune -f
+  docker volume prune -f
+  docker network prune -f
+  echo "✅ Limpieza completada."
+}
+
+# Mostrar información clave de los contenedores en ejecución (ID, Nombre, Imagen, IP).
+# Esta versión es más eficiente que la original, ya que usa el formato de `docker inspect`.
+dip() {
+  docker inspect --format '{{.Id}} {{.Name}} {{.Config.Image}} {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker ps -q) | \
+  awk '{printf "%-12.12s %-30.30s %-30.30s %-20.20s\n", $1, substr($2,2), $3, $4}'
+}
+
+# Alias comunes de Docker.
+alias dps='docker ps'
+alias dpsa='docker ps -a'
+alias dexe='docker exec -it' # Añadido -it para sesiones interactivas.
+alias dins='docker inspect'
+alias dimg='docker images'
+alias dlog='docker logs -f'
+alias dsp='docker system prune --all --force' # Alias más descriptivo.
+
+# Alias de Docker Compose.
+alias dc='docker-compose'
+alias dcup='dc up -d' # Añadido -d para modo detached por defecto.
+alias dcdn='dc down' # Alias más consistente (down -> dcdn).
+alias dcl='dc logs -f' # Para ver logs.
+
+# ---
+# ## 7. Git y Gestión de Dotfiles
+# ---
+
+# Alias de Git generales
+alias ga='git add'
+alias gaa='git add .'
+alias gc='git commit -m'
+alias gca='git commit -am'
+alias gs='git status'
+alias gp='git push'
+alias gpl='git pull'
+alias gb='git branch'
+alias gco='git checkout'
+alias glog="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+
+# Alias para gestionar dotfiles con un repositorio git bare.
+# Te permite hacer `config status`, `config add .zshrc`, etc. desde cualquier lugar.
+alias config='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+
+
+# ---
+# ## 8. Kubernetes (kubecolor)
+# ---
+# Usa kubecolor si está disponible para una salida más clara.
+
+if command -v kubecolor >/dev/null 2>&1; then alias k='kubecolor'; else alias k='kubectl'; fi
+
+alias kg='k get'
+alias kgp='kg pods'
+alias kgpw='kg pods -o wide'
+alias kgd='kg deployment'
+alias kgs='kg service'
+alias kgj='kg jobs'
+alias kgn='kg ingress'
+
+alias kapp='k apply -f'
+alias kdel='k delete -f'
+alias kdesc='k describe'
+alias klog='k logs -f'
+
+# ---
+# ## 9. Redes e Información de Sistema
+# ---
+
+# Obtener IPs pública y privada.
+whatsmyip() {
+    local pub_ip
+    pub_ip=$(curl -s ipinfo.io/ip)
+    echo "🌍 IP Externa: ${pub_ip}"
+    echo "💻 IP Interna:"
+    ip a | grep 'inet ' | awk '{print "   " $NF ": " $2}'
+}
+
+alias NetIntGW="ip r | grep default | cut -d' ' -f 3"
+alias NetIntIPv4='hostname -I | cut -d" " -f1'
+
+# Obtener información de la ventana o tecla presionada (requiere xorg-xprop y xorg-xev).
+alias ventana="xprop | grep WM_CLASS"
+alias tecla="xev | grep keysym"
+
+# ---
+# ## 10. Descargas y Multimedia
+# ---
+# Atajos para yt-dlp y transmission.
+
+alias yt='yt-dlp --embed-metadata -i'
+alias yta='yt-dlp -x --audio-format mp3 --audio-quality 0 -f bestaudio/best' # -x extrae audio.
+alias ytt='yt-dlp --skip-download --write-thumbnail' # Descarga solo la miniatura.
+alias trem='transmission-remote'
+alias YT='youtube-viewer'

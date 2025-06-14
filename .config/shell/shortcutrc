@@ -28,4 +28,3 @@ cfmc="$EDITOR /home/toku/.config/ncmpcpp/config" \
 cfl="$EDITOR /home/toku/.config/lf/lfrc" \
 cfL="$EDITOR /home/toku/.config/lf/scope" \
 cfX="$EDITOR /home/toku/.config/nsxiv/exec/key-handler" \
-brave="brave --password-store=basic" \
