@@ -50,3 +50,4 @@ then
     complete -o default -o nospace -F _git g;
     complete -F _git config
 fi;
+neofetch

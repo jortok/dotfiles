@@ -1,0 +1,11 @@
+account jorge.tokunaga@mejoredu.gob.mx
+host correo.mejoredu.gob.mx
+port 465
+from jorge.tokunaga@mejoredu.gob.mx
+user jorge.tokunaga@mejoredu.gob.mx
+passwordeval "pass jorge.tokunaga@mejoredu.gob.mx"
+auth on
+tls on
+tls_trust_file	/etc/ssl/certs/ca-certificates.crt
+logfile /home/toku/.local/state/msmtp/msmtp.log
+tls_starttls off

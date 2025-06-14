@@ -14,7 +14,7 @@ static const Block blocks[] = {
 	//{"", "sb-memory",      10, 14}, // Memoria RAM utilizada
 	{"", "sb-pacpackages",3600,  8}, // Paquetes de Arch para actualizar (revisión cada hora)
 	{"", "sb-battery",      5,  3}, // Estado de la batería
-	{"", "sb-volume",       0, 10}, // Control de volumen (actualizado por señal)
+	// {"", "sb-volume",       0, 10}, // Control de volumen (actualizado por señal)
 	{"", "sb-mic",          0, 20}, // Estado del micrófono (actualizado por señal)
 
 	// =================================================================

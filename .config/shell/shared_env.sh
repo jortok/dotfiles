@@ -6,7 +6,8 @@ export XDG_CACHE_HOME="$HOME/.cache"
 export XDG_DATA_HOME="$HOME/.local/share"
 
 # Configura el PATH, añadiendo binarios de Go y locales.
-export PATH="$HOME/.local/bin:$HOME/bin:$PATH:/usr/local/go/bin"
+export PATH="$HOME/.local/bin/statusbar:$HOME/.local/bin/cron:$HOME/.local/bin:$PATH:/usr/local/go/bin"
+
 
 # ---- Editor y Herramientas de Desarrollo ----
 export EDITOR='nvim'
@@ -34,3 +35,6 @@ export NODE_REPL_MODE='sloppy'
 # ---- Python y Otros ----
 export PYTHONIOENCODING='UTF-8'
 export MANPAGER='less -X'
+
+# ---  ChatGPT Key    ----
+OPENAI_API_KEY=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

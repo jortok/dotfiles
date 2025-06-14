@@ -22,8 +22,6 @@ alias ls='ls -h --color=auto --group-directories-first'
 alias l='ls -lFh'
 alias la='ls -lAFh'
 alias ll='ls -lrthA'
-alias lsd="ls -lFh | grep --color=never '^d'"
-alias lsf="ls -lFh | grep --color=never '^-'"
 
 # ---- Editores ----
 alias vim="nvim"
@@ -48,6 +46,9 @@ alias egrep='egrep --color=auto'
 alias path='echo -e ${PATH//:/\\n}'
 alias week='date +%V'
 alias tokudate='date +"%Y-%m-%d w%V.%u %H:%M"'
+
+# ---- lfub
+alias lf='lfub'
 
 # ---- Git ----
 alias g="git"
