@@ -51,6 +51,8 @@ fi
 
 # --- 8. Autocompletado para Alias y Herramientas Adicionales ---
 compdef _git config=git
+
+# Habilita el autocompletado para el alias `k` (kubectl)
 if command -v kubectl >/dev/null 2>&1; then
   source <(kubectl completion zsh)
 fi

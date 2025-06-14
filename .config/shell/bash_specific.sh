@@ -47,5 +47,6 @@ fi
 # Habilita el autocompletado de git para el alias 'g'
 if type _git &> /dev/null;
 then
-	complete -o default -o nospace -F _git g;
+    complete -o default -o nospace -F _git g;
+    complete -F _git config
 fi;
