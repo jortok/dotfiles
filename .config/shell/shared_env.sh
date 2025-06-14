@@ -12,11 +12,6 @@ export PATH="$HOME/.local/bin:$HOME/bin:$PATH:/usr/local/go/bin"
 export EDITOR='nvim'
 export GPG_TTY=$(tty)
 
-# ---- Historial de Comandos ----
-export HISTSIZE='32768'
-export HISTFILESIZE="${HISTSIZE}"
-export HISTCONTROL='ignoreboth' # Para Bash: ignora duplicados y líneas con espacio.
-
 # ---- Configuración de Herramientas (XDG Compliant) ----
 export WGETRC="$XDG_CONFIG_HOME/wgetrc"
 export MINIKUBE_HOME="$XDG_DATA_HOME/minikube"

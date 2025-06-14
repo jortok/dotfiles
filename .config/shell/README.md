@@ -4,77 +4,77 @@ Este documento explica la estructura y el flujo de carga de la configuración pa
 
 ## Filosofía y Objetivos
 
-1.  **Zsh como Shell Principal:** La experiencia en Zsh es la más rica y completa.
-2.  **Bash como Alternativa Funcional:** Bash hereda la configuración compartida para ser una alternativa consistente y útil.
+1.  **Zsh como Shell Principal:** La experiencia en Zsh es la más rica y completa, con un prompt mejorado y un sistema de autocompletado superior.
+2.  **Bash como Alternativa Funcional:** Bash hereda toda la configuración compartida (alias, funciones, variables) para ser una alternativa consistente y útil cuando sea necesaria.
 3.  **Hogar Limpio (`~/`):** Se minimiza el número de "dotfiles" en el directorio home. La configuración principal reside en `~/.config/`.
-4.  **Modularidad:** La lógica se separa en archivos con propósitos específicos para evitar la duplicación y facilitar las modificaciones. Un alias se cambia en un solo lugar y afecta a ambos shells.
+4.  **Modularidad:** La lógica se separa en archivos con propósitos específicos para evitar la duplicación y facilitar las modificaciones. Un alias se cambia en un solo lugar (`shared_aliases.sh`) y el cambio se aplica a ambos shells.
 
 ## Estructura Final de Archivos
 
 ```
-$HOME
-├── .bashrc
+/home/toku/
+├── .bashrc                     <-- Punto de entrada para Bash
 └── .config/
     ├── zsh/
-    │   ├── .zshenv
-    │   └── .zshrc
+    │   ├── .zshenv             <-- Punto de entrada para variables de entorno de Zsh
+    │   └── .zshrc              <-- Punto de entrada para Zsh interactivo
     └── shell/
-        ├── README.md            <-- (Este archivo)
-        ├── shared_env.sh
-        ├── shared_aliases.sh
-        ├── shared_functions.sh
-        ├── bash_specific.sh
-        ├── zsh_specific.zsh
-        ├── zsh_prompt.zsh
+        ├── README.md           <-- (Este archivo)
+        ├── shared_env.sh       <-- (Variables de entorno para AMBOS shells)
+        ├── shared_aliases.sh   <-- (Aliases para AMBOS shells)
+        ├── shared_functions.sh <-- (Funciones para AMBOS shells)
+        ├── bash_specific.sh    <-- (Orquestador principal de Bash)
+        ├── zsh_specific.sh     <-- (Orquestador principal de Zsh)
+        ├── zsh_prompt.zsh      <-- (Toda la lógica del prompt de Zsh)
         └── completions/
-            └── kubetail.bash    <-- (Lugar para scripts de autocompletado de terceros)
+            └── ...             <-- (Scripts de autocompletado para Bash, como kubetail.bash)
 ```
+
+## Resumen de Configuraciones Clave
+
+Para una referencia rápida, aquí están algunos de los alias, funciones y variables más importantes definidos en los archivos compartidos.
+
+### Variables de Entorno (`shared_env.sh`)
+
+| Variable          | Propósito                                             |
+| ----------------- | ----------------------------------------------------- |
+| `EDITOR`          | Define `nvim` como el editor de texto por defecto.    |
+| `PATH`            | Incluye `~/.local/bin`, `~/bin` y las rutas de Go.     |
+| `HISTSIZE`        | Aumenta el tamaño del historial de comandos.          |
+| `XDG_*`           | Estandariza las rutas de configuración, datos y caché.|
+| `DOCKER_CONFIG`   | Apunta la configuración de Docker a `~/.config/docker`.|
+
+### Alias (`shared_aliases.sh`)
+
+| Alias      | Comando Original                                           | Propósito                                       |
+|------------|------------------------------------------------------------|-------------------------------------------------|
+| `config`   | `/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME` | **Esencial:** Gestiona tus dotfiles con Git.    |
+| `l`, `la`, `ll` | `ls -lFh`, etc.                                        | Atajos para diferentes formatos de listado.     |
+| `g`        | `git`                                                      | Atajo para Git.                                 |
+| `k`        | `kubectl` o `kubecolor`                                    | Atajo para Kubernetes.                          |
+| `dcu`, `dcd` | `docker-compose up -d`, `docker-compose down`              | Atajos para iniciar y detener Docker Compose.   |
+| `..`, `...`  | `cd ..`, `cd ../..`                                        | Navegación rápida hacia directorios superiores. |
+
+### Funciones (`shared_functions.sh`)
+
+| Función   | Propósito                                                        |
+|-----------|------------------------------------------------------------------|
+| `mkcd`    | Crea un directorio y entra en él (`mkdir -p "$1" && cd "$1"`). |
+| `server`  | Inicia un servidor web simple en el directorio actual.           |
+| `dclean`  | Limpia contenedores, imágenes y volúmenes de Docker no usados.   |
+| `fs`      | Muestra el tamaño de un archivo o directorio de forma legible.   |
+| `tre`     | Muestra un árbol de directorios ignorando `node_modules`, etc.   |
+| `isup`    | Comprueba si una página web está en línea.                       |
 
 ## Flujo de Carga y Propósito de Cada Archivo
 
 ### Zsh (El Shell Principal)
 
-El flujo de carga de Zsh es muy específico y se respeta para un rendimiento y comportamiento óptimos.
-
-1.  **`~/.config/zsh/.zshenv`**
-    * **Cuándo se carga:** *Siempre*. Al iniciar cualquier tipo de sesión de Zsh (interactiva o no, login o no).
-    * **Propósito:** Definir **exclusivamente variables de entorno** (`export`). Es el lugar perfecto para `PATH`, `EDITOR`, etc., para que estén disponibles incluso en scripts.
-    * **Llama a:** `~/.config/shell/shared_env.sh`
-
-2.  **`~/.config/zsh/.zshrc`**
-    * **Cuándo se carga:** Solo para shells **interactivos**.
-    * **Propósito:** Configurar todo lo que el usuario ve y con lo que interactúa: alias, funciones, atajos de teclado (`bindkey`), el prompt, el historial, `compinit`, etc.
-    * **Llama a:** `~/.config/shell/zsh_specific.zsh`
-
-3.  **`~/.config/shell/zsh_specific.zsh`**
-    * **Propósito:** Es el orquestador principal de la sesión interactiva de Zsh. No contiene la configuración directamente, sino que carga los módulos en el orden correcto.
-    * **Llama a:** `shared_aliases.sh`, `shared_functions.sh`, `zsh_prompt.zsh` y configura `compinit`, `bindkey` y el resaltado de sintaxis.
-
-4.  **`~/.config/shell/zsh_prompt.zsh`**
-    * **Propósito:** Contiene toda la lógica para construir el prompt de Zsh, incluyendo la integración con Git a través de `vcs_info`. Está separado para mantener el archivo `zsh_specific.zsh` más limpio.
+1.  **`~/.config/zsh/.zshenv`** -> Llama a `shared_env.sh`
+2.  **`~/.config/zsh/.zshrc`** -> Llama a `zsh_specific.zsh`
+3.  **`zsh_specific.zsh`** -> Orquesta los módulos de alias, funciones y el prompt.
 
 ### Bash (El Shell Alternativo)
 
-Bash tiene un flujo más simple. Todo se centraliza en `.bashrc` para sesiones interactivas.
-
-1.  **`~/.bashrc`**
-    * **Cuándo se carga:** Al iniciar un shell interactivo que no es de login. Es el punto de entrada más común.
-    * **Propósito:** Es el único archivo de entrada en `~/`. Su única misión es verificar si la sesión es interactiva y, de ser así, cargar la configuración principal de Bash.
-    * **Llama a:** `~/.config/shell/bash_specific.sh`
-
-2.  **`~/.config/shell/bash_specific.sh`**
-    * **Propósito:** El orquestador principal para Bash. Carga todos los componentes compartidos y luego añade la configuración que es exclusiva de Bash, como su propio prompt y su sistema de autocompletado (`bash-completion`).
-    * **Llama a:** `shared_env.sh`, `shared_aliases.sh`, `shared_functions.sh` y los scripts de autocompletado.
-
-### Archivos Compartidos
-
-El corazón de la modularidad.
-
-1.  **`~/.config/shell/shared_env.sh`**
-    * **Propósito:** **Variables de entorno (`export`) y nada más.** Es el único lugar donde se definen.
-
-2.  **`~/.config/shell/shared_aliases.sh`**
-    * **Propósito:** **Aliases y nada más.** Contiene todos los alias que son compatibles tanto con Zsh como con Bash.
-
-3.  **`~/.config/shell/shared_functions.sh`**
-    * **Propósito:** **Funciones y nada más.** Contiene todas las funciones que usan sintaxis POSIX compatible con ambos shells.
+1.  **`~/.bashrc`** -> Llama a `bash_specific.sh`
+2.  **`bash_specific.sh`** -> Orquesta los módulos compartidos y la configuración de Bash.
