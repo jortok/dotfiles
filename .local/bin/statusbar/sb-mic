@@ -1,0 +1,16 @@
+#!/bin/sh
+# sb-mic: Muestra y controla el estado del micrófono (Captura).
+# Utiliza ALSA (amixer).
+
+case $BLOCK_BUTTON in
+    1) amixer set Capture toggle > /dev/null ;; # Clic izquierdo para silenciar/activar
+    3) notify-send "🎤 Módulo de Micrófono" "- Muestra si el micrófono está activo o silenciado.\n- Clic izquierdo para alternar." ;;
+    6) setsid -f "$TERMINAL" -e "$EDITOR" "$0" ;;
+esac
+
+# Obtiene el estado y muestra el ícono correspondiente
+if amixer get Capture | grep -q "\[on\]"; then
+    echo "🎤" # Micrófono activo
+else
+    echo "🔇" # Micrófono silenciado
+fi

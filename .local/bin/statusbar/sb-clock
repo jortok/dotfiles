@@ -27,4 +27,4 @@ case $BLOCK_BUTTON in
 esac
 
 #date "+%Y %b %d (%a) $icon%I:%M%p"
-date +"%Y-%m-%d w%V.%u $icon%H:%M"
+date +"%y%m%dw%V.%u %H:%M"

@@ -1,0 +1,18 @@
+#!/bin/sh
+# sb-keyboard: Muestra y permite cambiar la distribución del teclado.
+# Dependencias: setxkbmap, dmenu.
+
+case $BLOCK_BUTTON in
+	1) # Clic izquierdo para cambiar la distribución
+        # Obtiene una lista de layouts y la muestra con dmenu
+		kb_choice=$(awk '/! layout/{f=1; next} /! variant/{f=0} f {print $1}' /usr/share/X11/xkb/rules/base.lst | dmenu -i -l 20 -p "Selecciona un teclado")
+		[ -n "$kb_choice" ] && setxkbmap "$kb_choice" ;;
+	3) # Clic derecho para mostrar ayuda
+        current_layout=$(setxkbmap -query | awk '/layout:/ {print $2}')
+        notify-send "⌨️ Módulo de Teclado" "Distribución actual: <b>$current_layout</b>\n- Clic izquierdo para cambiar de distribución." ;;
+	6) # Editar el script
+        setsid -f "$TERMINAL" -e "$EDITOR" "$0" ;;
+esac
+
+# Muestra la distribución actual en la barra
+setxkbmap -query | awk '/layout:/ {print "⌨️ " toupper($2)}'

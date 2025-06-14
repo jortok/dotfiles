@@ -1,0 +1,38 @@
+#!/bin/sh
+# sb-keylocks: Detecta y controla el estado de Bloq Mayús y Bloq Num.
+#
+# Muestra un ícono para cada tecla de bloqueo activa.
+# Permite alternar su estado con clics del ratón.
+#
+# Iconos:
+#   🅰️ : Bloq Mayús está activo.
+#   🔢 : Bloq Num está activo.
+#
+# Dependencias: xset, xdotool
+
+case $BLOCK_BUTTON in
+	1) xdotool key Caps_Lock ;; # Clic izquierdo alterna Bloq Mayús
+	2) xdotool key Num_Lock ;;  # Clic de en medio alterna Bloq Num
+	3) notify-send "⌨️ Módulo de Teclas de Bloqueo" \
+"Muestra el estado de Bloq Mayús (🅰️) y Bloq Num (🔢).
+- Clic izquierdo: Alterna Bloq Mayús.
+- Clic de en medio: Alterna Bloq Num." ;;
+	6) setsid -f "$TERMINAL" -e "$EDITOR" "$0" ;;
+esac
+
+# awk procesa la salida de `xset q` para encontrar el estado
+# de las teclas de bloqueo en una sola línea y de forma eficiente.
+xset q | awk '/Caps Lock:/ {
+    output = ""
+    # Revisa el estado de Bloq Mayús (campo 4)
+    if ($4 == "on") {
+        output = output "🅰️ "
+    }
+    # Revisa el estado de Bloq Num (campo 8)
+    if ($8 == "on") {
+        output = output "🔢"
+    }
+    # Elimina cualquier espacio sobrante al final si solo Bloq Mayús está activo
+    sub(/ *$/, "", output)
+    print output
+}'

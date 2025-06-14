@@ -1,26 +1,23 @@
 #!/bin/bash
+# sb-vpn: Controla y muestra el estado de una conexión VPN con NetworkManager.
 
-VPN_NAME="jtokunaga"
-ICON_ON="🟢"    # VPN Encendida
-ICON_OFF="🔴"   # VPN Apagada
+VPN_NAME="jtokunaga" # <-- Cambia esto al nombre de tu conexión VPN
+ICON_ON="🟢"
+ICON_OFF="🔴"
 
-# Esta es la parte crucial para que los clics de dwmblocks funcionen:
-# Se ejecuta cuando dwmblocks envía la variable BLOCK_BUTTON (al hacer clic)
+# Manejo de clics
 if [ -n "$BLOCK_BUTTON" ] && [ "$BLOCK_BUTTON" -eq 1 ]; then
-    VPN_STATUS_BEFORE_TOGGLE=$(nmcli con show --active | grep -q "$VPN_NAME" && echo "active")
-
-    if [ "$VPN_STATUS_BEFORE_TOGGLE" == "active" ]; then
-        # Intentar desactivar la VPN
+    # Revisa directamente si la conexión está activa
+    if nmcli con show --active | grep -q "$VPN_NAME"; then
+        # Si está activa, intenta desactivarla
         if nmcli con down "$VPN_NAME" >/dev/null 2>&1; then
             notify-send "VPN Desconectada" "La conexión '$VPN_NAME' se ha desactivado." -u normal -i network-offline
         else
             notify-send "Error de VPN" "No se pudo desactivar la conexión '$VPN_NAME'." -u critical -i network-error
         fi
     else
-        # Intentar activar la VPN
+        # Si está inactiva, intenta activarla
         if nmcli con up "$VPN_NAME" >/dev/null 2>&1; then
-            # 'nmcli con up' puede tomar un momento. Una notificación inmediata asume éxito.
-            # Para mayor precisión, se podría verificar el estado después de un breve instante.
             notify-send "VPN Conectada" "La conexión '$VPN_NAME' se ha activado." -u normal -i network-vpn
         else
             notify-send "Error de VPN" "No se pudo activar la conexión '$VPN_NAME'." -u critical -i network-error
@@ -28,10 +25,8 @@ if [ -n "$BLOCK_BUTTON" ] && [ "$BLOCK_BUTTON" -eq 1 ]; then
     fi
 fi
 
-# Esta parte SIEMPRE se ejecuta para mostrar el ícono en dwmblocks:
-CURRENT_VPN_STATUS=$(nmcli con show --active | grep -q "$VPN_NAME" && echo "active")
-
-if [ "$CURRENT_VPN_STATUS" == "active" ]; then
+# Muestra el ícono en la barra
+if nmcli con show --active | grep -q "$VPN_NAME"; then
     echo "$ICON_ON"
 else
     echo "$ICON_OFF"

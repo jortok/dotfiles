@@ -1,36 +1,68 @@
-//Modify this file to change what commands output to your statusbar, and recompile using the make command.
+// dwmblocks - config.h
+// Archivo de configuración para los bloques de la barra de estado.
+// Modifica este archivo para cambiar los comandos y su comportamiento.
+// Recompila con `sudo make install` después de guardar los cambios.
+
 static const Block blocks[] = {
 	/*Icon*/	/*Command*/		/*Update Interval*/	/*Update Signal*/
-	/* {"⌨", "sb-kbselect", 0, 30}, */
-	{"", "cat /tmp/recordingicon 2>/dev/null",	0,	9},
-	{"",	"sb-tasks",	10,	26},
-	/* {"",	"sb-music",	0,	11}, */
-	{"",	"sb-pacpackages",	0,	8},
-	{"",	"sb-news",		0,	6},
-	/* {"",	"sb-price xmr-btc \"Monero to Bitcoin\" 🔒 25",	9000,	25}, */
-	/* {"",	"sb-price xmr Monero 🔒 24",			9000,	24}, */
-	/* {"",	"sb-price eth Ethereum 🍸 23",			9000,	23}, */
-	/* {"",	"sb-price btc Bitcoin 💰 21",			9000,	21}, */
-	{"",	"sb-torrent",	20,	7},
-	/* {"",	"sb-memory",	10,	14}, */
-	/* {"",	"sb-cpu",		10,	18}, */
-	/* {"",	"sb-moonphase",	18000,	17}, */
-	{"",	"sb-doppler",	0,	13},
-	{"",	"sb-forecast",	18000,	5},
-	{"",	"sb-mailbox",	180,	12},
-	{"",	"sb-nettraf",	1,	16},
-	{"",	"sb-volume",	0,	10},
-	{"",	"sb-battery",	5,	3},
-	{"",	"sb-clock",	60,	1},
-	{"",	"sb-internet",	5,	4},
-	/* {"",	"sb-iplocate", 0,	27}, */
-	{"",	"sb-help-icon",	0,	15},
+
+	// =================================================================
+	// Módulos del Sistema
+	// =================================================================
+
+	{"", "sb-cpubars",      1, 18}, // Barras de uso de CPU (reemplaza sb-cpu)
+	//{"", "sb-memory",      10, 14}, // Memoria RAM utilizada
+	{"", "sb-pacpackages",3600,  8}, // Paquetes de Arch para actualizar (revisión cada hora)
+	{"", "sb-battery",      5,  3}, // Estado de la batería
+	{"", "sb-volume",       0, 10}, // Control de volumen (actualizado por señal)
+	{"", "sb-mic",          0, 20}, // Estado del micrófono (actualizado por señal)
+
+	// =================================================================
+	// Módulos de Aplicaciones y Productividad
+	// =================================================================
+
+	{"", "sb-music",        0, 11}, // Reproductor de música (MPD/ncmpcpp)
+	{"", "sb-tasks",       10, 26}, // Tareas en segundo plano (tsp)
+	{"", "sb-mailbox",    180, 12}, // Correo sin leer
+	{"", "sb-news",       300,  6}, // Noticias sin leer (newsboat)
+	{"", "cat /tmp/recordingicon 2>/dev/null", 0, 9}, // Indicador de grabación de pantalla
+
+	// =================================================================
+	// Módulos de Información General y Teclado
+	// =================================================================
+
+	//{"", "sb-forecast", 18000,  5}, // Pronóstico del tiempo (actualización cada 5 horas)
+	{"", "sb-keylocks",     0, 22}, // Indicador de Bloq Mayús / Bloq Num (actualizado por señal)
+	// {"", "sb-keyboard",     0, 30}, // Distribución de teclado actual (actualizado por señal)
+	{"", "sb-clock",       30,  1}, // Fecha y hora (actualización cada 30 segundos)
+
+	// =================================================================
+	// Módulos de Red e Internet
+	// =================================================================
+
+	{"", "sb-internet",     5,  4}, // Conectividad (WiFi/Ethernet)
+	{"", "sb-vpn",          5,  7}, // Estado de la conexión VPN
+	{"", "sb-nettraf",      1, 16}, // Tráfico de red (subida/bajada)
+
+	// =================================================================
+	// Módulos Adicionales (Descomenta para usar)
+	// =================================================================
+
+	/* {"", "sb-moonphase", 18000, 17}, */
+	/* {"", "sb-torrent",     20,  7}, */
+	/* {"", "sb-iplocate",      0, 27}, */
+	/* {"", "sb-doppler",       0, 13}, */
+	/* {"", "sb-price btc Bitcoin ₿ 21", 9000, 21}, */
+	// {"", "sb-help-icon",     0, 15},
+
 };
 
-//Sets delimiter between status commands. NULL character ('\0') means no delimiter.
+// Define el delimitador que separa cada bloque en la barra de estado.
+// Un espacio con padding a cada lado suele verse bien.
+// Si quieres que no haya delimitador, usa: static char *delim = "";
 static char *delim = " ";
 
-// Have dwmblocks automatically recompile and run when you edit this file in
-// vim with the following line in your vimrc/init.vim:
-
-// autocmd BufWritePost ~/.local/src/dwmblocks/config.h !cd ~/.local/src/dwmblocks/; sudo make install && { killall -q dwmblocks;setsid dwmblocks & }
+// Para que dwmblocks se recompile y reinicie automáticamente al guardar este
+// archivo en vim/neovim, puedes añadir la siguiente línea a tu vimrc/init.vim:
+//
+// autocmd BufWritePost ~/.local/src/dwmblocks/config.h !cd ~/.local/src/dwmblocks/ && sudo make install && { killall -q dwmblocks; setsid dwmblocks & }
