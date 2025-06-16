@@ -1,64 +1,38 @@
 #!/bin/bash
 
 # ==============================================================================
-# Módulo de Extracción para picband.com (hus) para Gallery Tool
+# Módulo de Post-procesamiento para picband.com
 #
-# Este módulo está diseñado para parsear un formato de URL específico
-# que contiene un rango numérico, como:
-# URL: https://picband.com/static/pics/31517/[1-15].jpg
+# Contiene una única función que sabe cómo transformar las URLs de este sitio.
+# Es llamado por la regla genérica después de la extracción inicial.
 # ==============================================================================
 
-# La función principal que será llamada desde generic.sh
-# Recibe la URL de la página y el archivo de salida para las URLs extraídas.
-picband() {
-    local page_url="$1"
-    local output_file="$2"
+function picband() {
+    local archivo_de_urls="$1"
 
-    log INFO "🤖 Ejecutando módulo de extracción específico para picband.com..."
-
-    # Descarga el contenido de la página. Se usa '|| true' para evitar que
-    # un error de curl detenga todo el script (set -e).
-    local page_content
-    page_content=$(curl -f -sL --user-agent "Mozilla/5.0" "$page_url" || true)
-    
-    if [ -z "$page_content" ]; then
-        log WARN "No se pudo descargar contenido de la página o está vacío."
-        return
+    # 1. Validar que se recibió un argumento.
+    if [[ -z "$archivo_de_urls" ]]; then
+        log ERROR "No se proporcionó la ruta al archivo de URLs."
+        return 1 # Retorna un código de error
     fi
 
-    # Busca la línea con el patrón de URL, la procesa y expande el rango.
-    # El resultado se guarda directamente en el archivo de salida.
-    echo $page_content | grep "URL"
-    echo "$page_content" | grep 'URL:' | while IFS= read -r line; do
-        # Extrae la plantilla (ej: https://.../[1-15].jpg) y quita espacios
-        local url_template
-        url_template=$(echo "$line" | sed -n 's/.*URL: *\(https.*\)/\1/p' | tr -d '[:space:]')
-        echo $url_template
-
-        # Usa una expresión regular de Bash para capturar las partes de la URL
-        if [[ "$url_template" =~ (.*)\[([0-9]+)-([0-9]+)\](\..*) ]]; then
-            local base_url="${BASH_REMATCH[1]}"
-            local start_num="${BASH_REMATCH[2]}"
-            local end_num="${BASH_REMATCH[3]}"
-            local extension="${BASH_REMATCH[4]}"
-            
-            log INFO "Plantilla encontrada: ${base_url}[${start_num}-${end_num}]${extension}"
-            log INFO "Generando URLs desde el rango $start_num al $end_num..."
-
-            # Itera con 'seq' para generar los números y construye cada URL
-            for i in $(seq "$start_num" "$end_num"); do
-                echo "${base_url}${i}${extension}"
-            done
-        else
-            log WARN "No se pudo parsear la plantilla de URL: $url_template"
-        fi
-    done > "$output_file"
-    
-    local count
-    count=$(wc -l < "$output_file" | awk '{print $1}')
-    if [ "$count" -gt 0 ]; then
-        log INFO "Módulo 'picband' extrajo $count URLs."
-    else
-        log WARN "Módulo 'picband' no pudo extraer ninguna URL."
+    # 2. Validar que el archivo realmente existe.
+    if [[ ! -f "$archivo_de_urls" ]]; then
+        log ERROR "El archivo '$archivo_de_urls' no existe o no es un archivo regular."
+        return 1
     fi
+
+    log INFO "🐕 Aplicando post-procesamiento para picband.com..."
+
+    # 3. Usar sed para hacer ambas operaciones en un solo paso y modificar el archivo.
+    #    -i: modifica el archivo "in-place" (en el sitio).
+    #    -e: permite ejecutar múltiples scripts/expresiones.
+    #    1er script: '/static/!d' -> Si una línea NO (!) contiene "static", la borra (d).
+    #    2do script: 's/.../.../'  -> Realiza la sustitución que ya tenías.
+    sed -i \
+        -e '/static/!d' \
+        -e 's/\/t\([0-9]\+\.jpg\)$/\/\1/' \
+        "$archivo_de_urls"
+
+    log INFO "🐕 Terminando post-procesamiento para picband.com..."
 }

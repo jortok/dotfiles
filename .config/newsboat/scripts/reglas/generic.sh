@@ -52,6 +52,10 @@ extraer_urls_con_regla() {
         directstripper "$temp_urls_file"
     elif [[ "$url" == *"voyeurweb.com"* ]]; then
         vw "$temp_urls_file"
+    elif [[ "$url" == *"metarthunter.com"* ]]; then
+        metart "$temp_urls_file"
+    elif [[ "$url" == *"picband.com"* ]]; then
+        picband "$temp_urls_file"
     fi
     
     # --- Filtrado Final ---
