@@ -164,7 +164,7 @@ lua << EOF
 require('chatgpt').setup({
   -- Tip: For a more robust setup, set an environment variable
   -- instead of using a file. In your .zshrc or .bashrc add:
-  -- export OPENAI_API_KEY="your_key_here"
+  -- export OPENAI_API_KEY="",
   -- The plugin will pick it up automatically.
   -- api_key_cmd = "cat ~/.config/openai_api_key",
 })

@@ -1,3 +1,5 @@
 # vim: filetype=neomuttrc
 source /usr/local/share/mutt-wizard/mutt-wizard.muttrc
 set header_cache_backend = "lmdb"
+source /home/toku/.config/mutt/accounts/jorge.tokunaga@mejoredu.gob.mx.muttrc
+macro index,pager i1 '<sync-mailbox><enter-command>source /home/toku/.config/mutt/accounts/jorge.tokunaga@mejoredu.gob.mx.muttrc<enter><change-folder>!<enter>;<check-stats>' "switch to jorge.tokunaga@mejoredu.gob.mx"

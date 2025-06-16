@@ -1,0 +1,19 @@
+# vim: filetype=neomuttrc
+# muttrc file for account jorge.tokunaga@mejoredu.gob.mx
+set real_name = "jorge.tokunaga"
+set from = "jorge.tokunaga@mejoredu.gob.mx"
+set sendmail = "msmtp -a jorge.tokunaga@mejoredu.gob.mx"
+alias me jorge.tokunaga <jorge.tokunaga@mejoredu.gob.mx>
+set folder = "/home/toku/.local/share/mail/jorge.tokunaga@mejoredu.gob.mx"
+set header_cache = "/home/toku/.cache/mutt-wizard/jorge.tokunaga_mejoredu.gob.mx/headers"
+set message_cachedir = "/home/toku/.cache/mutt-wizard/jorge.tokunaga_mejoredu.gob.mx/bodies"
+set mbox_type = Maildir
+set hostname = "mejoredu.gob.mx"
+source /usr/local/share/mutt-wizard/switch.muttrc
+set spool_file = "+INBOX"
+set postponed = "+Drafts"
+set trash = "+Trash"
+set record = "+Sent"
+
+macro index o "<shell-escape>mailsync jorge.tokunaga@mejoredu.gob.mx<enter>" "sync jorge.tokunaga@mejoredu.gob.mx"
+mailboxes "=Sent" "=Drafts" "=Trash" "=Junk" "=INBOX"
